@@ -8,7 +8,7 @@ from telegram.ext import (
     filters,
 )
 from database import init_db, create_user, get_user
-TOKEN = "PASTE_YOUR_NEW_TOKEN_HERE"
+TOKEN = "8888125390:AAFAYQyWgmAkMnhGLrn-PpgVQuqfknS4BM0"
 NAME, AGE, HEIGHT, WEIGHT = range(4)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(

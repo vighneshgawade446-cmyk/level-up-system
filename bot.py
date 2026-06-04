@@ -7,9 +7,9 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
-TOKEN = "8888125390:AAFAYQyWgmAkMnhGLrn-PpgVQuqfknS4BM0"
+from database import init_db, create_user, get_user
+TOKEN = "PASTE_YOUR_NEW_TOKEN_HERE"
 NAME, AGE, HEIGHT, WEIGHT = range(4)
-user_profiles = {}
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "⚔️ HUNTER REGISTRATION\n\nEnter your name:"
@@ -30,49 +30,48 @@ async def get_height(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def get_weight(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["weight"] = update.message.text
     user_id = update.effective_user.id
-    user_profiles[user_id] = {
-        "name": context.user_data["name"],
-        "age": context.user_data["age"],
-        "height": context.user_data["height"],
-        "weight": context.user_data["weight"],
-        "rank": "E",
-        "level": 1,
-        "gold": 0,
-    }
-    profile = user_profiles[user_id]
+    create_user(
+        user_id,
+        context.user_data["name"],
+        context.user_data["age"],
+        context.user_data["height"],
+        context.user_data["weight"]
+    )
+    user = get_user(user_id)
     await update.message.reply_text(
         f"✅ REGISTRATION COMPLETE\n\n"
-        f"Hunter: {profile['name']}\n"
-        f"Age: {profile['age']}\n"
-        f"Height: {profile['height']} cm\n"
-        f"Weight: {profile['weight']} kg\n\n"
-        f"Rank: {profile['rank']}\n"
-        f"Level: {profile['level']}\n"
-        f"Gold: {profile['gold']}"
+        f"Hunter: {user[1]}\n"
+        f"Age: {user[2]}\n"
+        f"Height: {user[3]} cm\n"
+        f"Weight: {user[4]} kg\n\n"
+        f"Rank: {user[5]}\n"
+        f"Level: {user[6]}\n"
+        f"Gold: {user[7]}"
     )
     return ConversationHandler.END
 async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    if user_id not in user_profiles:
+    user = get_user(user_id)
+    if not user:
         await update.message.reply_text(
             "No profile found. Use /start to register."
         )
         return
-    profile = user_profiles[user_id]
     await update.message.reply_text(
         f"👤 HUNTER PROFILE\n\n"
-        f"Hunter: {profile['name']}\n"
-        f"Age: {profile['age']}\n"
-        f"Height: {profile['height']} cm\n"
-        f"Weight: {profile['weight']} kg\n\n"
-        f"Rank: {profile['rank']}\n"
-        f"Level: {profile['level']}\n"
-        f"Gold: {profile['gold']}"
+        f"Hunter: {user[1]}\n"
+        f"Age: {user[2]}\n"
+        f"Height: {user[3]} cm\n"
+        f"Weight: {user[4]} kg\n\n"
+        f"Rank: {user[5]}\n"
+        f"Level: {user[6]}\n"
+        f"Gold: {user[7]}"
     )
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Registration cancelled.")
     return ConversationHandler.END
 def main():
+    init_db()
     app = Application.builder().token(TOKEN).build()
     registration_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],

@@ -1,8 +1,8 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-TOKEN = 8888125390: AAFRevhLGSYGGf4 fm64mg
-PoE4FL39uQ9QtM
+TOKEN = "8888125390: AAFRevhLGSYGGf4 fm64mg
+PoE4FL39uQ9QtM"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(

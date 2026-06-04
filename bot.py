@@ -30,24 +30,35 @@ async def get_height(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def get_weight(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["weight"] = update.message.text
     user_id = update.effective_user.id
-    create_user(
-        user_id,
-        context.user_data["name"],
-        context.user_data["age"],
-        context.user_data["height"],
-        context.user_data["weight"]
-    )
-    user = get_user(user_id)
-    await update.message.reply_text(
-        f"✅ REGISTRATION COMPLETE\n\n"
-        f"Hunter: {user[1]}\n"
-        f"Age: {user[2]}\n"
-        f"Height: {user[3]} cm\n"
-        f"Weight: {user[4]} kg\n\n"
-        f"Rank: {user[5]}\n"
-        f"Level: {user[6]}\n"
-        f"Gold: {user[7]}"
-    )
+    try:
+        create_user(
+            user_id,
+            context.user_data["name"],
+            context.user_data["age"],
+            context.user_data["height"],
+            context.user_data["weight"]
+        )
+        user = get_user(user_id)
+        if not user:
+            await update.message.reply_text(
+                "❌ Database error. User could not be saved."
+            )
+            return ConversationHandler.END
+        await update.message.reply_text(
+            f"✅ REGISTRATION COMPLETE\n\n"
+            f"Hunter: {user[1]}\n"
+            f"Age: {user[2]}\n"
+            f"Height: {user[3]} cm\n"
+            f"Weight: {user[4]} kg\n\n"
+            f"Rank: {user[5]}\n"
+            f"Level: {user[6]}\n"
+            f"Gold: {user[7]}"
+        )
+    except Exception as e:
+        print("ERROR:", e)
+        await update.message.reply_text(
+            f"❌ Error: {e}"
+        )
     return ConversationHandler.END
 async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -67,6 +78,16 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Level: {user[6]}\n"
         f"Gold: {user[7]}"
     )
+async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "⚔️ HUNTER STATS\n\n"
+        "Strength: 0\n"
+        "Endurance: 0\n"
+        "Discipline: 0\n"
+        "Knowledge: 0\n"
+        "Agility: 0\n"
+        "Luck: 0"
+    )
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Registration cancelled.")
     return ConversationHandler.END
@@ -85,7 +106,9 @@ def main():
     )
     app.add_handler(registration_handler)
     app.add_handler(CommandHandler("profile", profile))
+    app.add_handler(CommandHandler("stats", stats))
     print("Bot is running...")
     app.run_polling()
 if __name__ == "__main__":
     main()
+``

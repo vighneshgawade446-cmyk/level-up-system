@@ -1,5 +1,5 @@
 import sqlite3
-DB_NAME = "levelup.db"
+DB_NAME = "/app/levelup.db"
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
